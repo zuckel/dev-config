@@ -1,0 +1,32 @@
+#!/bin/bash
+
+# this goes well with an alias that pipes any maven invocation through the script. can be put in .profile for example.
+# function mvn_with_hl() {
+#   mvn "${@}" 2>&1 | hl
+# }
+#
+# alias mvn='mvn_with_hl'
+#
+# WARNING: this script does not work for interactive applications
+
+readonly START='\(^\|[^A-Z]\)\('
+readonly OR='\|'
+readonly END='\)\([^A-Z]\|$\)'
+readonly NO_COLOR=$'\e[0m'
+readonly RED=$'\e[31;1m'
+readonly GREEN=$'\e[32;1m'
+readonly YELLOW=$'\e[33;1m'
+readonly BLUE=$'\e[34;1m'
+readonly CYAN=$'\e[36;1m'
+
+SED='sed -u -e "s/${START}INFO${OR}SUCCESS${END}/\1${GREEN}\2${NO_COLOR}\3/g"
+  -e "s/${START}WARN${OR}WARNING${OR}SKIPPED${END}/\1${YELLOW}\2${NO_COLOR}\3/g"
+  -e "s/${START}ERROR${OR}FAILURE${END}/\1${RED}\2${NO_COLOR}\3/g"
+  -e "s/${START}DEBUG${END}/\1${BLUE}\2${NO_COLOR}\3/g"'
+
+for (( i=1; i<= $#; i++ )); do
+  PARAM=${!i}
+  SED=$SED' -e "s/${START}'$PARAM'${END}/\1${RED}\2${NO_COLOR}\3/g"'
+done
+
+eval $SED

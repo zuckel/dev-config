@@ -1,0 +1,69 @@
+#!/bin/bash
+usage="Usage: unik [-c] [file]*\n
+-c (count) enable aggregated output (default is streamed output)"
+
+STREAM=1
+AGGREGATE=0
+numOptions=0
+
+while getopts cb option
+do
+  case "${option}"
+  in
+    c) STREAM=0
+       AGGREGATE=1
+       ((numOptions+=1))
+       ;;
+    b) STREAM=1
+       AGGREGATE=1
+       ((numOptions+=1))
+       ;;
+    ?) echo -e "$usage"
+       exit 1
+       ;;
+  esac
+done
+
+((firstFileParam=numOptions+1))
+
+mawk -v stream=$STREAM -v aggregate=$AGGREGATE '
+function longestCount(   maxLength, pos, num) {
+  maxLength = 0;
+  for(pos=0; pos<numUnikLines; pos++) {
+    num = countByLine[lineByPos[pos]]
+    if(length(num) > maxLength)
+      maxLength = length(num)
+  }
+  return maxLength
+}
+function spaces(n,   rV,i) {
+  rV = ""
+  for(i=0; i<n; i++)
+    rV = rV " "
+  return rV
+}
+BEGIN {
+  numUnikLines = 0
+}
+{
+  if (!($0 in countByLine)) {
+    countByLine[$0] = 1
+    lineByPos[numUnikLines] = $0
+    numUnikLines++
+    if (stream != 0)
+      print $0
+  } else {
+    countByLine[$0]++
+  }
+}
+END {
+  if (aggregate != 0) {
+    if (stream != 0)
+      print "--- frequencies ---"
+    indent = longestCount() + 1
+    for(pos=0; pos<numUnikLines; pos++) {
+      num = countByLine[lineByPos[pos]]
+      print spaces(indent - length(num)) num " " lineByPos[pos]
+    }
+  }
+}' "${@:$firstFileParam}"
