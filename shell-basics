@@ -17,4 +17,4 @@ alias gitignored='git ls-files --others -i --exclude-standard'
 
 alias fetchall='for DIR in `ls -d */`; do [ -d $DIR/.git ] && (cd $DIR && echo $DIR && git fetch --all 2>&1 | grep -- "->"); done'
 alias statusall='for DIR in `ls -d */`; do [ -d $DIR/.git ] && ( cd $DIR && echo $DIR && gits); done'
-alias repostatus='for DIR in `ls -d */`; do [ -d $DIR/.git ] && echo $DIR && (cd $DIR && git status | grep "Your branch" | grep -v "up-to-date" | sed "s/\(.*\)/\t\1/"); done'
+alias repostatus='for DIR in `ls -d */`; do [ -d $DIR/.git ] && echo $DIR && (cd $DIR && git status | grep "Your branch" | grep -v "up to date" | sed "s/\(.*\)/\t\1/"); done'
