@@ -1,0 +1,46 @@
+# prompt customization
+function determine_git_branch {
+    local dir=. head
+    until [ "$dir" -ef / ]; do
+        if [ -f "$dir/.git/HEAD" ]; then
+            head=$(< "$dir/.git/HEAD")
+            if [[ $head == ref:\ refs/heads/* ]]; then
+                git_branch=" ${head#*/*/}"
+            elif [[ $head != '' ]]; then
+                git_branch=" ${head:0:7}"
+            else
+                git_branch=' (unknown)'
+            fi
+            return
+        fi
+        dir="../$dir"
+    done
+    git_branch=''
+}
+
+function determine_svn {
+    local dir=. head
+    until [ "$dir" -ef / ]; do
+        if [ -d "$dir/.svn" ]; then
+            svn_repo=' svn'
+            return
+        fi
+        dir="../$dir"
+    done
+    svn_repo=''
+}
+
+
+normal='\e[0m'; red='\e[31;1m'; green='\e[32;1m'; yellow='\e[33;1m'; purple='\e[35;1m'; cyan='\e[36;1m';
+
+export PROMPT_COMMAND='\
+  RET=$?;\
+  ERRMSG="";\
+  if [[ $RET != 0 ]]; then\
+    ERRMSG=" $RET";\
+  fi;\
+  determine_git_branch;
+  determine_svn;
+  PS1="$purple\u@\h$normal:$green\w$yellow$JAVA_DISPLAY$git_branch$svn_repo$red$ERRMSG$normal\n\$ ";\
+'
+# \u = user, \h = host, \w = working directory
