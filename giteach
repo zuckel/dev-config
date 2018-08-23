@@ -1,0 +1,2 @@
+#!/bin/sh
+for DIR in `ls -d */`; do [ -d $DIR/.git ] && (cd $DIR && echo $DIR && ${@}); done
