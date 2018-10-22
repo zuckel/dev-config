@@ -16,8 +16,8 @@ unset LESSOPEN
 unset LESSCLOSE
 
 # git aliases
-alias gitl='git log --remotes --graph --branches --decorate --oneline --tags'
-alias gitlf="git log --remotes --graph --branches --pretty=format:'%C(auto)%h%d %s %Cgreen(%cr) %C(bold blue)%an%Creset'"
+alias gitl="git log --remotes --graph --branches --tags --decorate --oneline"
+alias gitlf="git log --remotes --graph --branches --tags --pretty=format:'%C(auto)%h%d %s %Cgreen(%cr) %C(bold blue)%an%Creset'"
 alias gitn="gitl -n25"
 alias gits="git status -s"
 alias gitignored='git ls-files --others -i --exclude-standard'
